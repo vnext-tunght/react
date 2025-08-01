@@ -39,8 +39,8 @@ export const useLogin = (options?: UseLoginOptions) => {
     onSuccess: (response: AuthResponse) => {
       // Store tokens
       TokenManager.setTokens({
-        accessToken: response.accessToken,
-        refreshToken: response.refreshToken,
+        accessToken: response.access_token,
+        refreshToken: response.refresh_token,
       })
 
       // Set current user in cache
@@ -70,8 +70,8 @@ export const useRegister = () => {
     onSuccess: (response: AuthResponse) => {
       // Store tokens
       TokenManager.setTokens({
-        accessToken: response.accessToken,
-        refreshToken: response.refreshToken,
+        accessToken: response.access_token,
+        refreshToken: response.refresh_token,
       })
 
       // Set current user in cache

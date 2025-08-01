@@ -3,8 +3,8 @@ import type { ReactNode } from 'react'
 import { TokenManager } from '@services/http'
 import { useLogin, useLogout } from '@hooks/requests'
 import { useSuccessMessages, useErrorMessages } from '@hooks/common'
+import type { User } from '../types'
 // import { useCurrentUser } from "@hooks/queries"; // Uncomment when needed
-import type { User } from '@services/api'
 
 interface AuthContextType {
   user: User | null
@@ -49,6 +49,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         id: '1',
         email: 'test@example.com',
         name: 'Test User',
+        role: 'user',
       })
     }
     setIsInitialized(true)
@@ -70,7 +71,11 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const login = async (email: string, password: string): Promise<boolean> => {
     try {
       const result = await loginMutation.mutateAsync({ email, password })
-      setUser(result.user)
+      // Transform AuthUser to User
+      setUser({
+        ...result.user,
+        role: (result.user.role as 'admin' | 'user') || 'user',
+      })
       return true
     } catch (error) {
       console.error('Login error:', error)

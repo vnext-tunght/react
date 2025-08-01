@@ -19,7 +19,7 @@ export interface ResetPasswordRequest {
   password: string
 }
 
-export interface User {
+export interface AuthUser {
   id: string
   email: string
   name: string
@@ -28,9 +28,10 @@ export interface User {
 }
 
 export interface AuthResponse {
-  user: User
-  accessToken: string
-  refreshToken: string
+  access_token: string
+  refresh_token: string
+  expires_in: number
+  user: AuthUser
 }
 
 export interface MessageResponse {

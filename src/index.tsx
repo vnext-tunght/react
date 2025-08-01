@@ -10,6 +10,7 @@ import ErrorBoundary from '@components/common/ErrorBoundary'
 import { Toaster } from 'react-hot-toast'
 import 'react-confirm-alert/src/react-confirm-alert.css'
 import './i18n' // Initialize i18n
+import '@core' // Initialize core extensions
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>

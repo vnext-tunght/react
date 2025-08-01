@@ -36,7 +36,9 @@
       "@schemas/*": ["src/schemas/*"],
       "@providers/*": ["src/providers/*"],
       "@const/*": ["src/const/*"],
-      "@locales/*": ["src/locales/*"]
+      "@locales/*": ["src/locales/*"],
+      "@core": ["src/core/index.ts"],
+      "@core/*": ["src/core/*"]
     },
 
     /* Additional */
