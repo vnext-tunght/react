@@ -26,17 +26,17 @@ vi.mock('react-hot-toast', () => ({
 
 describe('LoginPage', () => {
   it('renders login form', () => {
-    render(
-      <TestProviders>
-        <LoginPage />
-      </TestProviders>
-    )
-
-    // Test renders English by default - use more specific selectors
+    render(<LoginPage />, { wrapper: TestProviders })
+    
+    // Check if heading exists
     expect(screen.getByRole('heading', { name: 'Sign In' })).toBeInTheDocument()
-    expect(screen.getByRole('textbox', { name: /email/i })).toBeInTheDocument()
-    expect(screen.getByDisplayValue('')).toBeInTheDocument()
+    expect(screen.getByText('Welcome back! Please sign in to your account.')).toBeInTheDocument()
+    
+    // Check if submit button exists
     expect(screen.getByRole('button', { name: 'Sign In' })).toBeInTheDocument()
+    
+    // Check if link exists
+    expect(screen.getByText("Don't have an account? Sign Up")).toBeInTheDocument()
   })
 
   it('shows validation errors for empty fields', async () => {
@@ -64,7 +64,8 @@ describe('LoginPage', () => {
     )
 
     const emailInput = screen.getByRole('textbox', { name: /email/i })
-    const passwordInput = screen.getByDisplayValue('')
+    // Find password input by name attribute
+    const passwordInput = document.querySelector('input[name="password"]') as HTMLInputElement
     const submitButton = screen.getByRole('button', { name: 'Sign In' })
 
     fireEvent.change(emailInput, { target: { value: 'test@example.com' } })
