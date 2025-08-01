@@ -96,26 +96,3 @@ export const REGEX_PATTERNS = {
   PASSWORD: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d@$!%*?&]{8,}$/,
   URL: /^https?:\/\/.+/,
 } as const
-
-// Error messages
-// @deprecated Use useErrorMessages() hook from @hooks/common instead for i18n support
-export const ERROR_MESSAGES = {
-  NETWORK_ERROR: 'Network error. Please check your connection.',
-  UNAUTHORIZED: 'You are not authorized to perform this action.',
-  FORBIDDEN: 'Access denied.',
-  NOT_FOUND: 'The requested resource was not found.',
-  SERVER_ERROR: 'Server error. Please try again later.',
-  VALIDATION_ERROR: 'Please check your input and try again.',
-  UNKNOWN_ERROR: 'An unexpected error occurred.',
-} as const
-
-// Success messages
-// @deprecated Use useSuccessMessages() hook from @hooks/common instead for i18n support
-export const SUCCESS_MESSAGES = {
-  LOGIN: 'Successfully logged in!',
-  LOGOUT: 'Successfully logged out!',
-  SAVE: 'Changes saved successfully!',
-  DELETE: 'Item deleted successfully!',
-  CREATE: 'Item created successfully!',
-  UPDATE: 'Item updated successfully!',
-} as const
