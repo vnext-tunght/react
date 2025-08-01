@@ -1,0 +1,57 @@
+#react-confirm-alert {
+  z-index: 1401;
+  position: fixed;
+  overflow-wrap: break-word;
+  white-space: pre-line;
+}
+
+.react-confirm-alert-body {
+  width: 60vw !important;
+  border-radius: 5px;
+  padding: 24px 24px 0px 24px;
+  font-family: Roboto, "Noto Sans JP", "Open Sans", メイリオ, Meiryo, "ＭＳ Ｐゴシック", "MS PGothic", sans-serif;
+}
+
+.react-confirm-alert-button-group {
+  justify-content: flex-end !important;
+  padding: 12px 0;
+  margin-right: -24px;
+}
+
+.react-confirm-alert-overlay {
+  background: rgb(68 68 68 / 90%) !important;
+}
+.react-confirm-alert {
+  max-height: 80vh;
+  overflow-y: auto;
+}
+
+.react-confirm-alert-body > h1 {
+  font-size: x-large;
+  line-break: anywhere;
+}
+
+/* xs up */
+@media (min-width: 340px) {
+  .react-confirm-alert-body {
+    width: 85vw !important;
+  }
+}
+/* sm up */
+@media (min-width: 600px) {
+  .react-confirm-alert-body {
+    width: 60vw !important;
+  }
+}
+/* md up */
+@media (min-width: 900px) {
+  .react-confirm-alert-body {
+    width: 50vw !important;
+  }
+}
+/* lg up */
+@media (min-width: 1200px) {
+  .react-confirm-alert-body {
+    width: 40vw !important;
+  }
+}
