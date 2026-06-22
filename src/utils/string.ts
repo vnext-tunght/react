@@ -24,7 +24,11 @@ export const toKebabCase = (str: string): string => {
  * Converts a string to camelCase
  */
 export const toCamelCase = (str: string): string => {
-  return str.toCamelCase()
+  return str
+    .replace(/(?:^\w|[A-Z]|\b\w)/g, (word, index) => {
+      return index === 0 ? word.toLowerCase() : word.toUpperCase()
+    })
+    .replace(/\s+/g, '')
 }
 
 /**
@@ -58,8 +62,13 @@ export const generateRandomString = (length: number): string => {
 }
 
 /**
- * Formats a phone number
+ * Formats a phone number (US format)
  */
 export const formatPhoneNumber = (phoneNumber: string): string => {
-  return phoneNumber.toPhoneFormat()
+  const cleaned = phoneNumber.replace(/\D/g, '')
+  const match = cleaned.match(/^(\d{3})(\d{3})(\d{4})$/)
+  if (match) {
+    return `(${match[1]}) ${match[2]}-${match[3]}`
+  }
+  return phoneNumber
 }

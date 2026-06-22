@@ -40,6 +40,7 @@ export default defineConfig({
       '@providers': path.resolve(__dirname, './src/providers'),
       '@locales': path.resolve(__dirname, './src/locales'),
       '@test': path.resolve(__dirname, './src/test'),
+      '@core': path.resolve(__dirname, './src/core'),
     },
   },
 })
