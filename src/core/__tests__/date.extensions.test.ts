@@ -187,18 +187,29 @@ describe('Date extensions', () => {
   })
 
   describe('between', () => {
+    // `between` is defined on the prototype but not in the global type declaration
+    const callBetween = (
+      date: Date,
+      begin: Date,
+      end: Date,
+      option?: { includeBegin: boolean; includeEnd: boolean }
+    ): boolean => {
+      const fn = (date as unknown as Record<string, (...args: unknown[]) => boolean>).between
+      return option ? fn.call(date, begin, end, option) : fn.call(date, begin, end)
+    }
+
     it('returns true when date is between (inclusive)', () => {
       const date = new Date('2024-06-15')
       const begin = new Date('2024-06-01')
       const end = new Date('2024-06-30')
-      expect(date.between(begin, end)).toBe(true)
+      expect(callBetween(date, begin, end)).toBe(true)
     })
 
     it('includes boundaries by default', () => {
       const date = new Date('2024-06-01')
       const begin = new Date('2024-06-01')
       const end = new Date('2024-06-30')
-      expect(date.between(begin, end)).toBe(true)
+      expect(callBetween(date, begin, end)).toBe(true)
     })
 
     it('excludes boundaries when configured', () => {
@@ -206,7 +217,7 @@ describe('Date extensions', () => {
       const begin = new Date('2024-06-01')
       const end = new Date('2024-06-30')
       expect(
-        date.between(begin, end, {
+        callBetween(date, begin, end, {
           includeBegin: false,
           includeEnd: true,
         })
@@ -217,7 +228,7 @@ describe('Date extensions', () => {
       const date = new Date('2024-07-15')
       const begin = new Date('2024-06-01')
       const end = new Date('2024-06-30')
-      expect(date.between(begin, end)).toBe(false)
+      expect(callBetween(date, begin, end)).toBe(false)
     })
   })
 })

@@ -104,7 +104,7 @@ describe('Object extensions', () => {
 
   describe('deepMerge', () => {
     it('merges objects deeply', () => {
-      const result = Object.deepMerge(
+      const result = Object.deepMerge<Record<string, unknown>>(
         { a: 1, b: { c: 2 } },
         { b: { d: 3 }, e: 4 }
       )
@@ -123,9 +123,9 @@ describe('Object extensions', () => {
     })
 
     it('skips null entries', () => {
-      const result = Object.deepMerge(
+      const result = Object.deepMerge<Record<string, unknown>>(
         { a: 1 },
-        null as unknown as Partial<{ a: number }>,
+        null as unknown as Partial<Record<string, unknown>>,
         { b: 2 }
       )
       expect(result).toEqual({ a: 1, b: 2 })
