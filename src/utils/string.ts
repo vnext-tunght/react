@@ -1,23 +1,23 @@
 /**
- * Utility functions for string manipulation
+ * Utility functions for string manipulation.
+ *
+ * These delegate to the core String prototype extensions where possible,
+ * providing a functional API on top of the same shared logic.
  */
+import '@core'
 
 /**
  * Capitalizes the first letter of a string
  */
 export const capitalize = (str: string): string => {
-  if (!str) return str
-  return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase()
+  return str.capitalize()
 }
 
 /**
  * Converts a string to kebab-case
  */
 export const toKebabCase = (str: string): string => {
-  return str
-    .replace(/([a-z])([A-Z])/g, '$1-$2')
-    .replace(/[\s_]+/g, '-')
-    .toLowerCase()
+  return str.toKebabCase()
 }
 
 /**
@@ -39,23 +39,14 @@ export const truncate = (
   length: number,
   suffix = '...'
 ): string => {
-  if (str.length <= length) return str
-  return str.substring(0, length - suffix.length) + suffix
+  return str.truncate(length, suffix)
 }
 
 /**
  * Removes HTML tags from a string
  */
 export const stripHtml = (html: string): string => {
-  return html.replace(/<[^>]*>/g, '')
-}
-
-/**
- * Validates if a string is a valid email
- */
-export const isValidEmail = (email: string): boolean => {
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-  return emailRegex.test(email)
+  return html.stripHtml()
 }
 
 /**
@@ -71,7 +62,7 @@ export const generateRandomString = (length: number): string => {
 }
 
 /**
- * Formats a phone number
+ * Formats a phone number (US format)
  */
 export const formatPhoneNumber = (phoneNumber: string): string => {
   const cleaned = phoneNumber.replace(/\D/g, '')

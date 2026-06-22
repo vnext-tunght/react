@@ -1,6 +1,10 @@
 /**
- * Utility functions for number formatting and manipulation
+ * Utility functions for number formatting and manipulation.
+ *
+ * These delegate to the core Number prototype extensions where possible,
+ * providing a functional API on top of the same shared logic.
  */
+import '@core'
 
 /**
  * Formats a number as currency
@@ -10,17 +14,14 @@ export const formatCurrency = (
   currency = 'USD',
   locale = 'en-US'
 ): string => {
-  return new Intl.NumberFormat(locale, {
-    style: 'currency',
-    currency,
-  }).format(amount)
+  return amount.toCurrency(currency, locale)
 }
 
 /**
  * Formats a number with commas as thousands separators
  */
 export const formatNumber = (num: number, locale = 'en-US'): string => {
-  return new Intl.NumberFormat(locale).format(num)
+  return num.toFormatted(locale)
 }
 
 /**
@@ -42,15 +43,14 @@ export const formatPercentage = (
  * Rounds a number to specified decimal places
  */
 export const roundTo = (num: number, decimals: number): number => {
-  const factor = Math.pow(10, decimals)
-  return Math.round(num * factor) / factor
+  return num.round(decimals)
 }
 
 /**
  * Clamps a number between min and max values
  */
 export const clamp = (num: number, min: number, max: number): number => {
-  return Math.min(Math.max(num, min), max)
+  return num.clamp(min, max)
 }
 
 /**
@@ -94,14 +94,14 @@ export const getPercentage = (value: number, total: number): number => {
  * Checks if a number is even
  */
 export const isEven = (num: number): boolean => {
-  return num % 2 === 0
+  return num.isEven()
 }
 
 /**
  * Checks if a number is odd
  */
 export const isOdd = (num: number): boolean => {
-  return num % 2 !== 0
+  return num.isOdd()
 }
 
 /**

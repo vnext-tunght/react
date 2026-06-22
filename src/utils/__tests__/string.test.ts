@@ -5,10 +5,10 @@ import {
   toCamelCase,
   truncate,
   stripHtml,
-  isValidEmail,
   generateRandomString,
   formatPhoneNumber,
 } from '../string'
+import { isValidEmail } from '../validation'
 
 describe('string utils', () => {
   describe('capitalize', () => {

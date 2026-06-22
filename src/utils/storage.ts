@@ -2,151 +2,90 @@
  * Browser storage utilities with TypeScript support
  */
 
+interface StorageAdapter {
+  setItem: <T>(key: string, value: T) => boolean
+  getItem: <T>(key: string) => T | null
+  removeItem: (key: string) => boolean
+  clear: () => boolean
+  isAvailable: () => boolean
+}
+
+/**
+ * Factory function that creates a typed storage adapter for a given Storage backend.
+ * Eliminates duplication between localStorage and sessionStorage utilities.
+ */
+function createStorageAdapter(storage: Storage, label: string): StorageAdapter {
+  return {
+    setItem: <T>(key: string, value: T): boolean => {
+      try {
+        const serializedValue = JSON.stringify(value)
+        storage.setItem(key, serializedValue)
+        return true
+      } catch (error) {
+        console.error(`Error setting ${label} item:`, error)
+        return false
+      }
+    },
+
+    getItem: <T>(key: string): T | null => {
+      try {
+        const item = storage.getItem(key)
+        if (item === null) return null
+        return JSON.parse(item) as T
+      } catch (error) {
+        console.error(`Error getting ${label} item:`, error)
+        return null
+      }
+    },
+
+    removeItem: (key: string): boolean => {
+      try {
+        storage.removeItem(key)
+        return true
+      } catch (error) {
+        console.error(`Error removing ${label} item:`, error)
+        return false
+      }
+    },
+
+    clear: (): boolean => {
+      try {
+        storage.clear()
+        return true
+      } catch (error) {
+        console.error(`Error clearing ${label}:`, error)
+        return false
+      }
+    },
+
+    isAvailable: (): boolean => {
+      try {
+        const test = `__${label}_test__`
+        storage.setItem(test, test)
+        storage.removeItem(test)
+        return true
+      } catch {
+        return false
+      }
+    },
+  }
+}
+
 /**
  * LocalStorage utilities with JSON support
  */
-export const localStorage = {
-  /**
-   * Set item in localStorage with JSON serialization
-   */
-  setItem: <T>(key: string, value: T): boolean => {
-    try {
-      const serializedValue = JSON.stringify(value)
-      window.localStorage.setItem(key, serializedValue)
-      return true
-    } catch (error) {
-      console.error('Error setting localStorage item:', error)
-      return false
-    }
-  },
-
-  /**
-   * Get item from localStorage with JSON parsing
-   */
-  getItem: <T>(key: string): T | null => {
-    try {
-      const item = window.localStorage.getItem(key)
-      if (item === null) return null
-      return JSON.parse(item) as T
-    } catch (error) {
-      console.error('Error getting localStorage item:', error)
-      return null
-    }
-  },
-
-  /**
-   * Remove item from localStorage
-   */
-  removeItem: (key: string): boolean => {
-    try {
-      window.localStorage.removeItem(key)
-      return true
-    } catch (error) {
-      console.error('Error removing localStorage item:', error)
-      return false
-    }
-  },
-
-  /**
-   * Clear all localStorage
-   */
-  clear: (): boolean => {
-    try {
-      window.localStorage.clear()
-      return true
-    } catch (error) {
-      console.error('Error clearing localStorage:', error)
-      return false
-    }
-  },
-
-  /**
-   * Check if localStorage is available
-   */
-  isAvailable: (): boolean => {
-    try {
-      const test = '__localStorage_test__'
-      window.localStorage.setItem(test, test)
-      window.localStorage.removeItem(test)
-      return true
-    } catch {
-      return false
-    }
-  },
-}
+export const localStorage = createStorageAdapter(
+  window.localStorage,
+  'localStorage'
+)
 
 /**
  * SessionStorage utilities with JSON support
  */
-export const sessionStorage = {
-  /**
-   * Set item in sessionStorage with JSON serialization
-   */
-  setItem: <T>(key: string, value: T): boolean => {
-    try {
-      const serializedValue = JSON.stringify(value)
-      window.sessionStorage.setItem(key, serializedValue)
-      return true
-    } catch (error) {
-      console.error('Error setting sessionStorage item:', error)
-      return false
-    }
-  },
-
-  /**
-   * Get item from sessionStorage with JSON parsing
-   */
-  getItem: <T>(key: string): T | null => {
-    try {
-      const item = window.sessionStorage.getItem(key)
-      if (item === null) return null
-      return JSON.parse(item) as T
-    } catch (error) {
-      console.error('Error getting sessionStorage item:', error)
-      return null
-    }
-  },
-
-  /**
-   * Remove item from sessionStorage
-   */
-  removeItem: (key: string): boolean => {
-    try {
-      window.sessionStorage.removeItem(key)
-      return true
-    } catch (error) {
-      console.error('Error removing sessionStorage item:', error)
-      return false
-    }
-  },
-
-  /**
-   * Clear all sessionStorage
-   */
-  clear: (): boolean => {
-    try {
-      window.sessionStorage.clear()
-      return true
-    } catch (error) {
-      console.error('Error clearing sessionStorage:', error)
-      return false
-    }
-  },
-
-  /**
-   * Check if sessionStorage is available
-   */
-  isAvailable: (): boolean => {
-    try {
-      const test = '__sessionStorage_test__'
-      window.sessionStorage.setItem(test, test)
-      window.sessionStorage.removeItem(test)
-      return true
-    } catch {
-      return false
-    }
-  },
-}
+export const sessionStorage = createStorageAdapter(
+  window.sessionStorage,
+  'sessionStorage'
+)
 
 /**
  * Cookie utilities

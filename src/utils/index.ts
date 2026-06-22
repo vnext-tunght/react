@@ -5,15 +5,9 @@ export * from './number'
 export * from './storage'
 export * from './error'
 
-// Common utilities
-export const generateId = (length = 8): string => {
-  const chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'
-  let result = ''
-  for (let i = 0; i < length; i++) {
-    result += chars.charAt(Math.floor(Math.random() * chars.length))
-  }
-  return result
-}
+// Re-export generateRandomString as generateId for backward compatibility
+import { generateRandomString } from './string'
+export const generateId = (length = 8): string => generateRandomString(length)
 
 /**
  * Debounce function
@@ -47,32 +41,19 @@ export const throttle = <T extends (...args: unknown[]) => unknown>(
 }
 
 /**
- * Deep clone object
+ * Deep clone object — delegates to Object.deepClone from core extensions
  */
 export const deepClone = <T>(obj: T): T => {
-  if (obj === null || typeof obj !== 'object') return obj
-  if (obj instanceof Date) return new Date(obj.getTime()) as unknown as T
-  if (obj instanceof Array)
-    return obj.map(item => deepClone(item)) as unknown as T
-  if (typeof obj === 'object') {
-    const clonedObj = {} as T
-    for (const key in obj) {
-      if (Object.prototype.hasOwnProperty.call(obj, key)) {
-        clonedObj[key] = deepClone(obj[key])
-      }
-    }
-    return clonedObj
-  }
-  return obj
+  return Object.deepClone(obj)
 }
 
 /**
- * Check if object is empty
+ * Check if object is empty — delegates to Object.isEmpty from core extensions
  */
 export const isEmpty = (obj: unknown): boolean => {
   if (obj === null || obj === undefined) return true
   if (typeof obj === 'string' || Array.isArray(obj)) return obj.length === 0
-  if (typeof obj === 'object') return Object.keys(obj).length === 0
+  if (typeof obj === 'object') return Object.isEmpty(obj)
   return false
 }
 
