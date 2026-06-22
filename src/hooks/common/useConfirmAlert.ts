@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useTheme } from '@mui/material'
+import { useTheme, Theme } from '@mui/material'
 import { confirmAlert, ReactConfirmAlertProps } from 'react-confirm-alert'
 import '../../assets/styles/confirmAlert.css'
 
@@ -8,6 +8,47 @@ export function useConfirmAlert() {
     confirmAlert(option)
   }
   return confirm
+}
+
+interface DialogButton {
+  label: string
+  resolveValue: string
+  color?: string
+}
+
+interface DialogOptions {
+  title: string
+  message: string
+  buttons: DialogButton[]
+  dismissValue: string
+}
+
+/**
+ * Shared factory that builds a confirm-alert dialog with consistent styling.
+ * Eliminates duplicated button-style and promise-wrapping logic.
+ */
+function buildConfirmDialog(theme: Theme, options: DialogOptions): Promise<string> {
+  return new Promise<string>(resolve => {
+    const buttons = options.buttons.map(btn => ({
+      label: btn.label,
+      onClick: () => resolve(btn.resolveValue),
+      style: {
+        color: btn.color ?? theme.palette.primary.main,
+        backgroundColor: 'transparent',
+        fontFamily: `Roboto, ${theme.typography.fontFamily}`,
+        fontSize: '0.875rem',
+      },
+    }))
+
+    const alertOption: any = {
+      title: options.title,
+      message: options.message,
+      buttons,
+      onClickOutside: () => resolve(options.dismissValue),
+      onKeypressEscape: () => resolve(options.dismissValue),
+    }
+    confirmAlert(alertOption)
+  })
 }
 
 type YesNoResult = 'YES' | 'NO' | ''
@@ -24,44 +65,15 @@ export function useConfirmAlertYesNo() {
       ok: 'OK',
     }
   ) => {
-    const promise = new Promise<YesNoResult>(resolve => {
-      const option: any = {
-        title: text,
-        message: subText,
-        buttons: [
-          {
-            label: buttonOption?.cancel ?? 'Cancel',
-            onClick: () => resolve('NO'),
-            style: {
-              color: theme.palette.primary.main,
-              backgroundColor: 'transparent',
-              marginRight: 0,
-              fontFamily: `Roboto, ${theme.typography.fontFamily}`,
-              fontSize: '0.875rem',
-            },
-          },
-          {
-            label: buttonOption?.ok ?? 'OK',
-            onClick: () => resolve('YES'),
-            style: {
-              color: theme.palette.primary.main,
-              backgroundColor: 'transparent',
-              fontFamily: `Roboto, ${theme.typography.fontFamily}`,
-              fontSize: '0.875rem',
-            },
-          },
-        ],
-        onClickOutside: () => {
-          resolve('')
-        },
-        onKeypressEscape: () => {
-          resolve('')
-        },
-      }
-      confirmAlert(option)
-    })
-
-    return promise
+    return buildConfirmDialog(theme, {
+      title: text,
+      message: subText,
+      buttons: [
+        { label: buttonOption.cancel, resolveValue: 'NO' },
+        { label: buttonOption.ok, resolveValue: 'YES' },
+      ],
+      dismissValue: '',
+    }) as Promise<YesNoResult>
   }
   return yesNoAlertAsync
 }
@@ -80,44 +92,15 @@ export function useConfirmAlertEscape() {
       escape: 'Escape',
     }
   ) => {
-    const promise = new Promise<EscapeResult>(resolve => {
-      const option: any = {
-        title: text,
-        message: subText,
-        buttons: [
-          {
-            label: buttonOption?.stay,
-            onClick: () => resolve('STAY'),
-            style: {
-              color: theme.palette.primary.main,
-              backgroundColor: 'transparent',
-              marginRight: 0,
-              fontFamily: `Roboto, ${theme.typography.fontFamily}`,
-              fontSize: '0.875rem',
-            },
-          },
-          {
-            label: buttonOption?.escape,
-            onClick: () => resolve('ESCAPE'),
-            style: {
-              color: theme.palette.warning.main,
-              backgroundColor: 'transparent',
-              fontFamily: `Roboto, ${theme.typography.fontFamily}`,
-              fontSize: '0.875rem',
-            },
-          },
-        ],
-        onClickOutside: () => {
-          resolve('STAY')
-        },
-        onKeypressEscape: () => {
-          resolve('STAY')
-        },
-      }
-      confirmAlert(option)
-    })
-
-    return promise
+    return buildConfirmDialog(theme, {
+      title: text,
+      message: subText,
+      buttons: [
+        { label: buttonOption.stay, resolveValue: 'STAY' },
+        { label: buttonOption.escape, resolveValue: 'ESCAPE', color: theme.palette.warning.main },
+      ],
+      dismissValue: 'STAY',
+    }) as Promise<EscapeResult>
   }
   return escapeAlertAsync
 }

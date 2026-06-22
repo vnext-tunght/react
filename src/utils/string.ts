@@ -1,34 +1,30 @@
 /**
- * Utility functions for string manipulation
+ * Utility functions for string manipulation.
+ *
+ * These delegate to the core String prototype extensions where possible,
+ * providing a functional API on top of the same shared logic.
  */
+import '@core'
 
 /**
  * Capitalizes the first letter of a string
  */
 export const capitalize = (str: string): string => {
-  if (!str) return str
-  return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase()
+  return str.capitalize()
 }
 
 /**
  * Converts a string to kebab-case
  */
 export const toKebabCase = (str: string): string => {
-  return str
-    .replace(/([a-z])([A-Z])/g, '$1-$2')
-    .replace(/[\s_]+/g, '-')
-    .toLowerCase()
+  return str.toKebabCase()
 }
 
 /**
  * Converts a string to camelCase
  */
 export const toCamelCase = (str: string): string => {
-  return str
-    .replace(/(?:^\w|[A-Z]|\b\w)/g, (word, index) => {
-      return index === 0 ? word.toLowerCase() : word.toUpperCase()
-    })
-    .replace(/\s+/g, '')
+  return str.toCamelCase()
 }
 
 /**
@@ -39,23 +35,14 @@ export const truncate = (
   length: number,
   suffix = '...'
 ): string => {
-  if (str.length <= length) return str
-  return str.substring(0, length - suffix.length) + suffix
+  return str.truncate(length, suffix)
 }
 
 /**
  * Removes HTML tags from a string
  */
 export const stripHtml = (html: string): string => {
-  return html.replace(/<[^>]*>/g, '')
-}
-
-/**
- * Validates if a string is a valid email
- */
-export const isValidEmail = (email: string): boolean => {
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-  return emailRegex.test(email)
+  return html.stripHtml()
 }
 
 /**
@@ -74,10 +61,5 @@ export const generateRandomString = (length: number): string => {
  * Formats a phone number
  */
 export const formatPhoneNumber = (phoneNumber: string): string => {
-  const cleaned = phoneNumber.replace(/\D/g, '')
-  const match = cleaned.match(/^(\d{3})(\d{3})(\d{4})$/)
-  if (match) {
-    return `(${match[1]}) ${match[2]}-${match[3]}`
-  }
-  return phoneNumber
+  return phoneNumber.toPhoneFormat()
 }

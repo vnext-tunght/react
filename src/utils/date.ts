@@ -1,6 +1,10 @@
 /**
- * Utility functions for date manipulation
+ * Utility functions for date manipulation.
+ *
+ * These delegate to the core Date prototype extensions where possible,
+ * providing a functional API on top of the same shared logic.
  */
+import '@core'
 
 /**
  * Formats a date to a readable string
@@ -78,13 +82,7 @@ export const getRelativeTime = (date: Date | string | number): string => {
  */
 export const isToday = (date: Date | string | number): boolean => {
   const dateObj = new Date(date)
-  const today = new Date()
-
-  return (
-    dateObj.getDate() === today.getDate() &&
-    dateObj.getMonth() === today.getMonth() &&
-    dateObj.getFullYear() === today.getFullYear()
-  )
+  return dateObj.isToday()
 }
 
 /**
@@ -92,9 +90,7 @@ export const isToday = (date: Date | string | number): boolean => {
  */
 export const isPast = (date: Date | string | number): boolean => {
   const dateObj = new Date(date)
-  const now = new Date()
-
-  return dateObj < now
+  return dateObj.before(new Date())
 }
 
 /**
@@ -102,9 +98,7 @@ export const isPast = (date: Date | string | number): boolean => {
  */
 export const isFuture = (date: Date | string | number): boolean => {
   const dateObj = new Date(date)
-  const now = new Date()
-
-  return dateObj > now
+  return dateObj.after(new Date())
 }
 
 /**
@@ -112,8 +106,7 @@ export const isFuture = (date: Date | string | number): boolean => {
  */
 export const addDays = (date: Date | string | number, days: number): Date => {
   const dateObj = new Date(date)
-  dateObj.setDate(dateObj.getDate() + days)
-  return dateObj
+  return dateObj.addDays(days)
 }
 
 /**
@@ -131,8 +124,7 @@ export const subtractDays = (
  */
 export const startOfDay = (date: Date | string | number): Date => {
   const dateObj = new Date(date)
-  dateObj.setHours(0, 0, 0, 0)
-  return dateObj
+  return dateObj.startOfDay()
 }
 
 /**
@@ -140,6 +132,5 @@ export const startOfDay = (date: Date | string | number): Date => {
  */
 export const endOfDay = (date: Date | string | number): Date => {
   const dateObj = new Date(date)
-  dateObj.setHours(23, 59, 59, 999)
-  return dateObj
+  return dateObj.endOfDay()
 }
