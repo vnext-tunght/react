@@ -3,12 +3,13 @@ import type { ReactNode } from 'react'
 import { TokenManager } from '@services/http'
 import { useLogin, useLogout } from '@hooks/requests'
 import { useSuccessMessages, useErrorMessages } from '@hooks/common'
+import { extractErrorMessage } from '@utils/error'
 import type { User } from '../types'
 // import { useCurrentUser } from "@hooks/queries"; // Uncomment when needed
 
 interface AuthContextType {
   user: User | null
-  login: (email: string, password: string) => Promise<boolean>
+  login: (email: string, password: string) => Promise<{ success: boolean; error?: string }>
   logout: () => void
   isAuthenticated: boolean
   isLoading: boolean
@@ -68,7 +69,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     return () => window.removeEventListener('auth:logout', handleLogout)
   }, [])
 
-  const login = async (email: string, password: string): Promise<boolean> => {
+  const login = async (
+    email: string,
+    password: string
+  ): Promise<{ success: boolean; error?: string }> => {
     try {
       const result = await loginMutation.mutateAsync({ email, password })
       // Transform AuthUser to User
@@ -76,10 +80,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         ...result.user,
         role: (result.user.role as 'admin' | 'user') || 'user',
       })
-      return true
+      return { success: true }
     } catch (error) {
-      console.error('Login error:', error)
-      return false
+      return { success: false, error: extractErrorMessage(error) }
     }
   }
 

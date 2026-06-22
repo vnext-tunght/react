@@ -10,6 +10,7 @@ import {
 } from '@/types/auth'
 import { TokenManager } from '@services/http'
 import { notifications } from '@utils/notifications'
+import { extractErrorMessage } from '@utils/error'
 import { User } from '@/types'
 
 // Query Keys
@@ -53,8 +54,8 @@ export const useLogin = (options?: UseLoginOptions) => {
       customOnSuccess?.(response)
     },
     onError: (error: Error) => {
-      console.error('Login error:', error)
-      notifications.error(errorMessage)
+      const message = extractErrorMessage(error, errorMessage)
+      notifications.error(message)
 
       // Call custom error handler
       customOnError?.(error)
@@ -62,8 +63,21 @@ export const useLogin = (options?: UseLoginOptions) => {
   })
 }
 
-export const useRegister = () => {
+interface UseRegisterOptions {
+  onSuccess?: (response: AuthResponse) => void
+  onError?: (error: Error) => void
+  successMessage?: string
+  errorMessage?: string
+}
+
+export const useRegister = (options?: UseRegisterOptions) => {
   const queryClient = useQueryClient()
+  const {
+    onSuccess: customOnSuccess,
+    onError: customOnError,
+    successMessage = 'Account created successfully!',
+    errorMessage = 'Failed to create account',
+  } = options || {}
 
   return useMutation({
     mutationFn: (data: RegisterRequest) => authService.register(data),
@@ -78,11 +92,17 @@ export const useRegister = () => {
       queryClient.setQueryData(AUTH_QUERY_KEYS.currentUser, response.user)
 
       // Show success notification
-      notifications.success('Account created successfully!')
+      notifications.success(successMessage)
+
+      // Call custom success handler
+      customOnSuccess?.(response)
     },
-    onError: error => {
-      console.error('Register error:', error)
-      notifications.error('Failed to create account')
+    onError: (error: Error) => {
+      const message = extractErrorMessage(error, errorMessage)
+      notifications.error(message)
+
+      // Call custom error handler
+      customOnError?.(error)
     },
   })
 }
@@ -117,13 +137,12 @@ export const useLogout = (options?: UseLogoutOptions) => {
       customOnSuccess?.()
     },
     onError: (error: Error) => {
-      console.error('Logout error:', error)
-
       // Even if logout fails, clear tokens and cache
       TokenManager.clearTokens()
       queryClient.clear()
 
-      notifications.success(successMessage)
+      const message = extractErrorMessage(error, 'Logout failed, but local session was cleared.')
+      notifications.warning(message)
 
       // Call custom error handler
       customOnError?.(error)
@@ -131,34 +150,74 @@ export const useLogout = (options?: UseLogoutOptions) => {
   })
 }
 
-export const useForgotPassword = () => {
+interface UseForgotPasswordOptions {
+  onSuccess?: (response: MessageResponse) => void
+  onError?: (error: Error) => void
+  errorMessage?: string
+}
+
+export const useForgotPassword = (options?: UseForgotPasswordOptions) => {
+  const {
+    onSuccess: customOnSuccess,
+    onError: customOnError,
+    errorMessage = 'Failed to send password reset email',
+  } = options || {}
+
   return useMutation({
     mutationFn: (data: ForgotPasswordRequest) =>
       authService.forgotPassword(data),
     onSuccess: (response: MessageResponse) => {
       notifications.success(response.message || 'Password reset email sent!')
+      customOnSuccess?.(response)
     },
-    onError: error => {
-      console.error('Forgot password error:', error)
-      notifications.error('Failed to send password reset email')
+    onError: (error: Error) => {
+      const message = extractErrorMessage(error, errorMessage)
+      notifications.error(message)
+      customOnError?.(error)
     },
   })
 }
 
-export const useResetPassword = () => {
+interface UseResetPasswordOptions {
+  onSuccess?: (response: MessageResponse) => void
+  onError?: (error: Error) => void
+  errorMessage?: string
+}
+
+export const useResetPassword = (options?: UseResetPasswordOptions) => {
+  const {
+    onSuccess: customOnSuccess,
+    onError: customOnError,
+    errorMessage = 'Failed to reset password',
+  } = options || {}
+
   return useMutation({
     mutationFn: (data: ResetPasswordRequest) => authService.resetPassword(data),
     onSuccess: (response: MessageResponse) => {
       notifications.success(response.message || 'Password reset successfully!')
+      customOnSuccess?.(response)
     },
-    onError: error => {
-      console.error('Reset password error:', error)
-      notifications.error('Failed to reset password')
+    onError: (error: Error) => {
+      const message = extractErrorMessage(error, errorMessage)
+      notifications.error(message)
+      customOnError?.(error)
     },
   })
 }
 
-export const useChangePassword = () => {
+interface UseChangePasswordOptions {
+  onSuccess?: (response: MessageResponse) => void
+  onError?: (error: Error) => void
+  errorMessage?: string
+}
+
+export const useChangePassword = (options?: UseChangePasswordOptions) => {
+  const {
+    onSuccess: customOnSuccess,
+    onError: customOnError,
+    errorMessage = 'Failed to change password',
+  } = options || {}
+
   return useMutation({
     mutationFn: (data: { currentPassword: string; newPassword: string }) =>
       authService.changePassword(data),
@@ -166,16 +225,31 @@ export const useChangePassword = () => {
       notifications.success(
         response.message || 'Password changed successfully!'
       )
+      customOnSuccess?.(response)
     },
-    onError: error => {
-      console.error('Change password error:', error)
-      notifications.error('Failed to change password')
+    onError: (error: Error) => {
+      const message = extractErrorMessage(error, errorMessage)
+      notifications.error(message)
+      customOnError?.(error)
     },
   })
 }
 
-export const useUpdateProfile = () => {
+interface UseUpdateProfileOptions {
+  onSuccess?: (user: User) => void
+  onError?: (error: Error) => void
+  successMessage?: string
+  errorMessage?: string
+}
+
+export const useUpdateProfile = (options?: UseUpdateProfileOptions) => {
   const queryClient = useQueryClient()
+  const {
+    onSuccess: customOnSuccess,
+    onError: customOnError,
+    successMessage = 'Profile updated successfully!',
+    errorMessage = 'Failed to update profile',
+  } = options || {}
 
   return useMutation({
     mutationFn: (data: Partial<Omit<User, 'id'>>) =>
@@ -184,11 +258,13 @@ export const useUpdateProfile = () => {
       // Update user in cache
       queryClient.setQueryData(AUTH_QUERY_KEYS.currentUser, updatedUser)
 
-      notifications.success('Profile updated successfully!')
+      notifications.success(successMessage)
+      customOnSuccess?.(updatedUser)
     },
-    onError: error => {
-      console.error('Update profile error:', error)
-      notifications.error('Failed to update profile')
+    onError: (error: Error) => {
+      const message = extractErrorMessage(error, errorMessage)
+      notifications.error(message)
+      customOnError?.(error)
     },
   })
 }

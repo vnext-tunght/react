@@ -9,12 +9,14 @@ export const localStorage = {
   /**
    * Set item in localStorage with JSON serialization
    */
-  setItem: <T>(key: string, value: T): void => {
+  setItem: <T>(key: string, value: T): boolean => {
     try {
       const serializedValue = JSON.stringify(value)
       window.localStorage.setItem(key, serializedValue)
+      return true
     } catch (error) {
       console.error('Error setting localStorage item:', error)
+      return false
     }
   },
 
@@ -35,22 +37,26 @@ export const localStorage = {
   /**
    * Remove item from localStorage
    */
-  removeItem: (key: string): void => {
+  removeItem: (key: string): boolean => {
     try {
       window.localStorage.removeItem(key)
+      return true
     } catch (error) {
       console.error('Error removing localStorage item:', error)
+      return false
     }
   },
 
   /**
    * Clear all localStorage
    */
-  clear: (): void => {
+  clear: (): boolean => {
     try {
       window.localStorage.clear()
+      return true
     } catch (error) {
       console.error('Error clearing localStorage:', error)
+      return false
     }
   },
 
@@ -76,12 +82,14 @@ export const sessionStorage = {
   /**
    * Set item in sessionStorage with JSON serialization
    */
-  setItem: <T>(key: string, value: T): void => {
+  setItem: <T>(key: string, value: T): boolean => {
     try {
       const serializedValue = JSON.stringify(value)
       window.sessionStorage.setItem(key, serializedValue)
+      return true
     } catch (error) {
       console.error('Error setting sessionStorage item:', error)
+      return false
     }
   },
 
@@ -102,22 +110,26 @@ export const sessionStorage = {
   /**
    * Remove item from sessionStorage
    */
-  removeItem: (key: string): void => {
+  removeItem: (key: string): boolean => {
     try {
       window.sessionStorage.removeItem(key)
+      return true
     } catch (error) {
       console.error('Error removing sessionStorage item:', error)
+      return false
     }
   },
 
   /**
    * Clear all sessionStorage
    */
-  clear: (): void => {
+  clear: (): boolean => {
     try {
       window.sessionStorage.clear()
+      return true
     } catch (error) {
       console.error('Error clearing sessionStorage:', error)
+      return false
     }
   },
 
