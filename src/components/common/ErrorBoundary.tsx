@@ -10,6 +10,7 @@ interface ErrorBoundaryState {
 interface ErrorBoundaryProps {
   children: React.ReactNode
   fallback?: React.ComponentType<{ error?: Error; resetError: () => void }>
+  onError?: (error: Error, errorInfo: React.ErrorInfo) => void
 }
 
 class ErrorBoundary extends React.Component<
@@ -27,6 +28,7 @@ class ErrorBoundary extends React.Component<
 
   componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
     console.error('ErrorBoundary caught an error:', error, errorInfo)
+    this.props.onError?.(error, errorInfo)
   }
 
   handleReset = () => {
@@ -87,7 +89,7 @@ const DefaultErrorFallback: React.FC<DefaultErrorFallbackProps> = ({
           We're sorry, but something unexpected happened. Please try again.
         </Typography>
 
-        {process.env.NODE_ENV === 'development' && error && (
+        {import.meta.env.DEV && error && (
           <Box
             sx={{
               p: 2,

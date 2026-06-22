@@ -3,6 +3,7 @@ export * from './string'
 export * from './date'
 export * from './number'
 export * from './storage'
+export * from './error'
 
 // Common utilities
 export const generateId = (length = 8): string => {

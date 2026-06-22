@@ -57,6 +57,11 @@ const queryClient = new QueryClient({
         // Retry up to 2 times for server errors (5xx)
         return failureCount < 2
       },
+      onError: (error: unknown) => {
+        if (import.meta.env.DEV) {
+          console.error('[MutationError]', error)
+        }
+      },
     },
   },
 })
